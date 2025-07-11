@@ -1,0 +1,29 @@
+{
+  "trades": [
+    {
+      "profit_pct": 0.01,
+      "timestamp": "2025-07-11T16:25:06.279195"
+    },
+    {
+      "profit_pct": 0.01,
+      "timestamp": "2025-07-11T16:25:06.279372"
+    },
+    {
+      "profit_pct": 0.01,
+      "timestamp": "2025-07-11T16:25:06.279568"
+    },
+    {
+      "profit_pct": -0.02,
+      "timestamp": "2025-07-11T16:25:06.281474"
+    },
+    {
+      "profit_pct": -0.02,
+      "timestamp": "2025-07-11T16:25:06.281733"
+    }
+  ],
+  "current_balance": 5.0,
+  "initial_balance": 5.0,
+  "upgrade_history": [],
+  "current_tier": "tier_1",
+  "last_upgrade": null
+}
