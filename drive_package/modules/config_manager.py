@@ -42,7 +42,7 @@ class SmartConfig:
         self.leverage = 2               # Low leverage untuk safety
         
         # Position management - MODERATE MODE
-        self.max_open_positions = 2     # 2 posisi untuk moderate growth
+        self.max_open_positions = 2     # 2 posisi awal untuk pertumbuhan lebih cepat
         
         # Balance tracking
         self.initial_balance = 100.0    # Default initial balance untuk reference
@@ -58,7 +58,7 @@ class SmartConfig:
         self.exchange = "binance_futures"
         self.strategy = "hybrid"
         self.risk_level = "conservative"
-        self.max_open_trades = 1  # Alias for max_open_positions
+        self.max_open_trades = 2  # Alias yang konsisten dengan max_open_positions
         self.vps = "1GB"
         
         # Position sizing config
