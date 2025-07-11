@@ -89,14 +89,14 @@ class TelegramNotifier:
         """Startup message yang lucu dan ringan"""
         # Custom startup message requested by user
         return (
-            "🤖 ArifBot hadir cuy! \\(mode Optimized dah nyala\\)\n\n"
+            "🤖 ArifBot hadir cuy! (mode Optimized dah nyala)\n\n"
             "🍻 Yo, geng! Bot udah bangun dari tidur siang, siap cari cuan sambil ngopi! ☕️\n"
             "🎮 Fitur andalan lagi on semua: pattern detector, risk guard, auto-leverage… pokoknya kayak squad lengkap pas main futsal.\n\n"
             "⚙️ Status tongkrongan:\n"
             "• Otak bot: Masih waras ✅\n"
             "• Memori: Ga full, santuy ✅\n"
-            "• Target: 30-45% per bulan \\(ngayal dikit gapapa\\) 🚀\n"
-            "• Posisi aktif maksimal: 3 \\(biar dompet ga nangis\\)\n\n"
+            "• Target: 30-45% per bulan (ngayal dikit gapapa) 🚀\n"
+            "• Posisi aktif maksimal: 3 (biar dompet ga nangis)\n\n"
             "Gaskeun, siapa takut! Kalo profit traktir seblak ya! 🌶️\n\n"
             "*Disclaimer: bot cuma kasih sinyal tongkrongan, rugi tanggung sendiri ya bro!*"
         )
