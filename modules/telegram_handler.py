@@ -87,18 +87,16 @@ class TelegramNotifier:
     
     def get_startup_message(self) -> str:
         """Startup message yang lucu dan ringan"""
-        # Custom startup message requested by user
+        # Updated startup notification as per latest user request
         return (
-            "🤖 ArifBot hadir cuy! (mode Optimized dah nyala)\n\n"
-            "🍻 Yo, geng! Bot udah bangun dari tidur siang, siap cari cuan sambil ngopi! ☕️\n"
-            "🎮 Fitur andalan lagi on semua: pattern detector, risk guard, auto-leverage… pokoknya kayak squad lengkap pas main futsal.\n\n"
-            "⚙️ Status tongkrongan:\n"
-            "• Otak bot: Masih waras ✅\n"
-            "• Memori: Ga full, santuy ✅\n"
-            "• Target: 30-45% per bulan (ngayal dikit gapapa) 🚀\n"
-            "• Posisi aktif maksimal: 3 (biar dompet ga nangis)\n\n"
-            "Gaskeun, siapa takut! Kalo profit traktir seblak ya! 🌶️\n\n"
-            "*Disclaimer: bot cuma kasih sinyal tongkrongan, rugi tanggung sendiri ya bro!*"
+            "🤖 ArifBot nyala, breee.\n\n"
+            "Kerja sih kerja... tapi kalo market ngambek, ya gue ikut diem.\n\n"
+            "⚙️ Posisi? 3.\n"
+            "Profit? Mungkin.\n"
+            "Tujuan hidup? Belum tau.\n\n"
+            "Lo entry? Bagus.\n"
+            "Lo diem? Lebih bagus.\n"
+            "Lo tanya ‘masuk gak?’ — ya suka-suka lo, breee 😭"
         )
     
     def get_entry_message(self, action: str, symbol: str, confidence: float, reason: str, pro_analysis: Dict, genius_features: Dict = None) -> str:
