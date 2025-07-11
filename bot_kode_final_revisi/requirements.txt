@@ -6,3 +6,4 @@ requests==2.31.0
 python-dotenv==1.0.1
 psutil==5.9.8
 asyncio-throttle==1.0.2
+pytz==2023.3
