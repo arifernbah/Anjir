@@ -1,0 +1,30 @@
+# ========================================
+# 🤖 BINANCE FUTURES TRADING BOT
+# Updated Requirements (2025)
+# ========================================
+
+# 🔑 Core Binance Trading
+python-binance>=1.0.46
+python-telegram-bot>=21.9,<22.0
+
+# 📊 Data Analysis & Scientific Computing
+numpy>=1.26.4
+pandas>=2.2.3
+
+# 🌐 Network & HTTP Utilities
+requests>=2.31.0
+python-dotenv>=1.0.1
+
+# ⚡ System Monitoring & Performance
+psutil>=6.1.1
+
+# 🔄 Async Utilities
+asyncio-throttle>=1.0.2
+
+# 🔒 Additional Security & Performance (Recommended)
+cryptography>=42.0.0
+aiohttp>=3.10.0
+
+# 📈 Optional: Enhanced Analytics
+# ta-lib>=0.4.28  # Technical Analysis Library
+# ccxt>=4.3.0     # Multi-exchange support
