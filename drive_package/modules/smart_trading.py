@@ -1131,7 +1131,7 @@ class SmartExit:
         """Enhanced volatility-based dynamic stops"""
         
         if len(closes) < 20:
-            base_stop = -0.02
+            atr_pct = 2.0  # assume moderate
         else:
             # Advanced ATR calculation
             true_ranges = []
@@ -1145,15 +1145,23 @@ class SmartExit:
             atr = np.mean(true_ranges[-14:]) if len(true_ranges) >= 14 else np.mean(true_ranges)
             volatility_pct = (atr / closes[-1]) * 100
             
+            # Determine regime
+            regime = 'ranging'
+            if entry_analysis and 'pro_analysis' in entry_analysis:
+                regime = entry_analysis['pro_analysis'].get('market_regime', {}).get('regime', 'ranging')
+
+            sl_adaptive, tp_adaptive = self._get_dynamic_sl_tp(atr_pct, regime)
+            base_stop = sl_adaptive
+            
             # Genius volatility-based stop calculation
             if volatility_pct > 3.0:
-                base_stop = -0.025  # Wider stop for high volatility
+                base_stop *= 1.2  # Wider stop for high volatility
             elif volatility_pct > 2.0:
-                base_stop = -0.02
+                base_stop *= 1.1
             elif volatility_pct < 0.5:
-                base_stop = -0.015  # Tighter stop for low volatility
+                base_stop *= 0.9  # Tighter stop for low volatility
             else:
-                base_stop = -0.018
+                base_stop *= 1.0
             
             # Market regime adjustment
             market_trend = self._get_market_trend_strength(closes[-50:] if len(closes) >= 50 else closes)
@@ -1172,7 +1180,7 @@ class SmartExit:
         if profit_pct > 0.01:  # If in 1%+ profit, allow wider stop
             base_stop *= 1.3
         
-        final_stop = max(base_stop, -0.03)  # Never more than 3%
+        final_stop = max(base_stop, -0.04)  # clamp to 4%
         
         if profit_pct <= final_stop:
             return {
@@ -1182,6 +1190,31 @@ class SmartExit:
             }
         
         return {"should_exit": False, "reason": "Volatility stop not triggered"}
+    
+    def _get_dynamic_sl_tp(self, atr_pct: float, regime: str = "ranging"):
+        """Return tuple (sl_pct_negative, tp_pct_positive). Percent values (e.g., 0.018 for 1.8%)."""
+        # Base grid by ATR percentage
+        if atr_pct < 1.0:
+            sl, tp = 0.018, 0.008
+        elif atr_pct < 2.0:
+            sl, tp = 0.022, 0.010
+        elif atr_pct < 4.0:
+            sl, tp = 0.028, 0.015
+        else:
+            sl, tp = 0.035, 0.020
+
+        # Regime adjustments
+        if regime == "trending_strong":
+            tp *= 1.25
+        elif regime == "trending_weak":
+            tp *= 1.10
+        elif regime == "ranging":
+            tp *= 0.75
+            sl *= 0.9
+        elif regime == "volatile":
+            sl *= 1.15
+
+        return -abs(sl), abs(tp)
     
     def _check_genius_profit_taking(self, profit_pct: float, closes: List[float], volumes: List[float], side: str, position_size: float, entry_analysis: Dict = None) -> Dict:
         """Multi-level genius profit taking system"""
@@ -1195,12 +1228,19 @@ class SmartExit:
         volatility_multiplier = 0.8 + min(market_volatility * 2, 0.4)  # 0.8x to 1.2x
         
         # Dynamic profit levels
+        dynamic_sl, dynamic_tp = self._get_dynamic_sl_tp(self._calculate_market_volatility(closes) * 100, 'ranging')  # fallback
+        # Replace with regime-specific TP if available
+        regime = 'ranging'
+        if entry_analysis and 'pro_analysis' in entry_analysis:
+            regime = entry_analysis['pro_analysis'].get('market_regime', {}).get('regime', 'ranging')
+            _, dynamic_tp = self._get_dynamic_sl_tp(market_volatility * 100, regime)
+
         profit_levels = [
-            0.003 * confidence_multiplier * volatility_multiplier,  # Quick scalp
-            0.006 * confidence_multiplier * volatility_multiplier,  # Conservative
-            0.012 * confidence_multiplier * volatility_multiplier,  # Standard
-            0.020 * confidence_multiplier * volatility_multiplier,  # Aggressive
-            0.035 * confidence_multiplier * volatility_multiplier   # Moon shot
+            dynamic_tp,  # Quick scalp uses adaptive TP
+            0.006 * confidence_multiplier * volatility_multiplier,
+            0.012 * confidence_multiplier * volatility_multiplier,
+            0.020 * confidence_multiplier * volatility_multiplier,
+            0.035 * confidence_multiplier * volatility_multiplier
         ]
         
         # Partial profit taking logic
