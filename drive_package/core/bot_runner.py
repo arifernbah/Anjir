@@ -15,6 +15,7 @@ import gc
 import psutil
 import os
 import subprocess
+import numpy as np
 
 # Binance imports
 from binance import AsyncClient, BinanceSocketManager
