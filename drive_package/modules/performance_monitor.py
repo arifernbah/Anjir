@@ -34,7 +34,8 @@ class PerformanceMonitor:
             "tier_1": {"max_positions": 1, "min_balance": 5, "min_trades": 0},
             "tier_2": {"max_positions": 2, "min_balance": 15, "min_trades": 30},
             "tier_3": {"max_positions": 3, "min_balance": 50, "min_trades": 100},
-            "tier_4": {"max_positions": 4, "min_balance": 100, "min_trades": 200}
+            "tier_4": {"max_positions": 4, "min_balance": 100, "min_trades": 200},
+            "tier_5": {"max_positions": 5, "min_balance": 200, "min_trades": 300}
         }
     
     def _load_performance_data(self) -> Dict:
@@ -234,7 +235,7 @@ class PerformanceMonitor:
     def _get_next_tier(self, current_tier: str, balance: float, total_trades: int) -> Optional[str]:
         """Get next tier based on current performance"""
         try:
-            tier_order = ["tier_1", "tier_2", "tier_3", "tier_4"]
+            tier_order = ["tier_1", "tier_2", "tier_3", "tier_4", "tier_5"]
             current_index = tier_order.index(current_tier)
             
             for i in range(current_index + 1, len(tier_order)):
@@ -287,6 +288,18 @@ class PerformanceMonitor:
                     },
                     "confidence_threshold": 60,
                     "risk_level": "balanced"
+                }
+            elif new_tier == "tier_5":  # 4 → 5 positions (pro/aggressive)
+                config = {
+                    "max_open_trades": 5,
+                    "position_sizing": {
+                        "method": "kelly_partial",
+                        "fraction": 0.35
+                    },
+                    "confidence_threshold": 55,
+                    "risk_level": "aggressive",
+                    "portfolio_heat_limit": 20,
+                    "leverage_min": 5
                 }
             else:
                 config = {}
