@@ -83,6 +83,9 @@ class SmartConfig:
         self.trailing_enabled = True
         self.trailing_percent = 0.2
         
+        # Backtest flag (skip real orders)
+        self.is_backtest = False
+        
         # Session config
         self.session_active_hours_only = True
         self.session_hours = "07:00-21:00"
@@ -98,6 +101,9 @@ class SmartConfig:
             self.api_secret = os.getenv('BINANCE_API_SECRET', os.getenv('API_SECRET', ''))
             self.telegram_token = os.getenv('TELEGRAM_TOKEN', '')
             self.telegram_chat_id = os.getenv('TELEGRAM_CHAT_ID', '')
+
+            # BACKTEST flag
+            self.is_backtest = os.getenv('BACKTEST', 'false').lower() == 'true'
             
             # Setelah membaca API key dan secret, set mode otomatis
             if self.api_key and self.api_secret:

@@ -93,6 +93,9 @@ class BinanceFuturesProBot:
         
         # Initialize performance monitor
         self.performance_monitor = PerformanceMonitor()
+
+        # Cache for klines to reduce HTTP calls (symbol+interval -> {"data":..., "ts":timestamp})
+        self.cached_klines = {}
         
         # Performance monitoring
         self.process = psutil.Process()
@@ -522,6 +525,14 @@ class BinanceFuturesProBot:
     async def get_klines_data(self, symbol: str, interval: str, limit: int = 100) -> list:
         """Get klines data dengan memory optimization"""
         try:
+            # Try cache first (expire 600 s)
+            cache_key = f"{symbol}_{interval}_{limit}"
+            now_ts = time.time()
+            if cache_key in self.cached_klines:
+                cached = self.cached_klines[cache_key]
+                if now_ts - cached["ts"] < 600:  # 10-menit cache
+                    return cached["data"]
+
             klines = await self.client.futures_klines(
                 symbol=symbol,
                 interval=interval,
@@ -540,6 +551,8 @@ class BinanceFuturesProBot:
                     float(kline[5])   # Volume
                 ])
             
+            # Save to cache
+            self.cached_klines[cache_key] = {"data": processed_klines, "ts": now_ts}
             return processed_klines
             
         except Exception as e:
@@ -625,14 +638,18 @@ class BinanceFuturesProBot:
             # Set leverage
             await self.client.futures_change_leverage(symbol=symbol, leverage=leverage)
             
-            # Place order
-            side = SIDE_BUY if action == "long" else SIDE_SELL
-            order = await self.client.futures_create_order(
-                symbol=symbol,
-                side=side,
-                type=ORDER_TYPE_MARKET,
-                quantity=quantity
-            )
+            # If backtest mode, skip real order and simulate
+            if self.config.is_backtest:
+                logger.info(f"[BACKTEST] Simulated {action.upper()} {symbol} qty:{quantity:.6f}")
+            else:
+                # Place order live
+                side = SIDE_BUY if action == "long" else SIDE_SELL
+                order = await self.client.futures_create_order(
+                    symbol=symbol,
+                    side=side,
+                    type=ORDER_TYPE_MARKET,
+                    quantity=quantity
+                )
             
             # Send professional notification
             message = self.telegram.get_entry_message(action, symbol, confidence, reason, pro_analysis)
@@ -670,14 +687,17 @@ class BinanceFuturesProBot:
             side = SIDE_SELL if position_amt > 0 else SIDE_BUY
             quantity = abs(position_amt)
             
-            # Close position
-            order = await self.client.futures_create_order(
-                symbol=symbol,
-                side=side,
-                type=ORDER_TYPE_MARKET,
-                quantity=quantity,
-                reduceOnly=True
-            )
+            # Close position (live or simulated)
+            if self.config.is_backtest:
+                logger.info(f"[BACKTEST] Simulated CLOSE {symbol} amt:{quantity}")
+            else:
+                order = await self.client.futures_create_order(
+                    symbol=symbol,
+                    side=side,
+                    type=ORDER_TYPE_MARKET,
+                    quantity=quantity,
+                    reduceOnly=True
+                )
             
             # Calculate profit
             entry_price = float(position_data['entryPrice'])
