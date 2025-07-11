@@ -902,7 +902,34 @@ class BinanceFuturesProBot:
                         
                         if exit_analysis['action'] == 'close':
                             await self.close_position_pro(symbol, position, exit_analysis)
-                    
+                        else:
+                            # ===== Scaling-in logic (Phase B-2.4) =====
+                            try:
+                                entry_info = self.active_entries.get(symbol, {})
+                                if entry_info and not entry_info.get('add_on_done'):
+                                    entry_price = entry_info.get('entry_price', 0)
+                                    if entry_price > 0:
+                                        current_price = float(position['markPrice'])
+                                        profit_pct = (current_price - entry_price) / entry_price if float(position['positionAmt']) > 0 else (entry_price - current_price) / entry_price
+                                        if profit_pct >= 0.008:  # 0.8 %
+                                            logger.info(f"Scaling-in add-on for {symbol}: profit {profit_pct:.2%}")
+                                            # Use half original risk percentage
+                                            entry_analysis_scaled = {
+                                                'action': 'long' if float(position['positionAmt']) > 0 else 'short',
+                                                'confidence': 90,  # treat as high confidence
+                                                'reason': 'Scaling-in add-on',
+                                                'pro_analysis': {},
+                                                'position_sizing': {
+                                                    'risk_percentage': entry_info.get('position_sizing', {}).get('risk_percentage', 0.02) / 2,
+                                                    'leverage': entry_info.get('position_sizing', {}).get('leverage', 2)
+                                                }
+                                            }
+                                            success_add = await self.execute_trade_pro(symbol, entry_analysis_scaled, klines_data)
+                                            if success_add:
+                                                self.active_entries[symbol]['add_on_done'] = True
+                            except Exception as e:
+                                logger.error(f"Error in scaling-in logic: {e}")
+
                     # Check entry conditions with smart position management
                     current_positions_count = len(open_positions)
                     symbol_positions_count = len(symbol_positions)
