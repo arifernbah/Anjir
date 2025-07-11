@@ -19,10 +19,11 @@ class PerformanceMonitor:
         self.config_path = config_path
         self.performance_data = self._load_performance_data()
 
-        # Win / lose streak counters for dynamic heat limit
-        self.win_streak = 0
-        self.lose_streak = 0
-        self.current_heat_limit_pct = 10  # percentage, default 10%
+        # === Dynamic heat-limit state ===
+        self.win_streak: int = 0
+        self.lose_streak: int = 0
+        # Default heat limit 10 %, will be adjusted ±2 %
+        self.current_heat_limit_pct: int = 10
         
         # Upgrade criteria
         self.upgrade_criteria = {
@@ -83,7 +84,7 @@ class PerformanceMonitor:
             trade_data['timestamp'] = datetime.now().isoformat()
             self.performance_data['trades'].append(trade_data)
 
-            # ================= Win / Lose streak logic =================
+            # ===== Win/Lose streak tracking =====
             profit = trade_data.get('profit_pct', 0)
             if profit > 0:
                 self.win_streak += 1
@@ -95,12 +96,12 @@ class PerformanceMonitor:
             # Adjust heat limit
             if self.win_streak >= 3:
                 self.current_heat_limit_pct = min(self.current_heat_limit_pct + 2, 20)
-                self.win_streak = 0  # reset after adjustment
-                logger.info(f"Portfolio heat limit increased to {self.current_heat_limit_pct}% after 3-win streak")
+                logger.info(f"Heat limit ↑ to {self.current_heat_limit_pct}% after 3-win streak")
+                self.win_streak = 0
             elif self.lose_streak >= 2:
                 self.current_heat_limit_pct = max(self.current_heat_limit_pct - 2, 6)
+                logger.info(f"Heat limit ↓ to {self.current_heat_limit_pct}% after 2-loss streak")
                 self.lose_streak = 0
-                logger.info(f"Portfolio heat limit reduced to {self.current_heat_limit_pct}% after 2-loss streak")
 
             self._save_performance_data()
             
@@ -405,7 +406,7 @@ class PerformanceMonitor:
             logger.error(f"Error getting upgrade requirements: {e}")
             return {"status": "Error calculating requirements"}
 
-    # -------- helper for bot_runner --------
-    def get_current_heat_limit_pct(self) -> float:
-        """Return current portfolio heat limit percentage (0-100)"""
+    # === Public accessor ===
+    def get_current_heat_limit_pct(self) -> int:
+        """Return current dynamic portfolio heat-limit percentage (integer)."""
         return self.current_heat_limit_pct

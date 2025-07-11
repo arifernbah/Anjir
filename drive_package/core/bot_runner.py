@@ -961,7 +961,9 @@ class BinanceFuturesProBot:
                         if can_entry:
                             # Check portfolio heat limit
                             portfolio_heat = self.position_sizing.get_portfolio_heat(open_positions, current_balance)
-                            heat_limit = getattr(self.config, 'portfolio_heat_limit', 10) / 100
+                            # Use dynamic heat-limit from performance monitor if available
+                            heat_limit_pct = self.performance_monitor.get_current_heat_limit_pct()
+                            heat_limit = heat_limit_pct / 100
                             
                             if portfolio_heat['total_heat'] < heat_limit:
                                 success = await self.execute_trade_pro(symbol, entry_analysis, klines_data)
