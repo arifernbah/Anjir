@@ -116,6 +116,7 @@ class TelegramNotifier:
             "• Target: 30-45% per bulan \(ngayal dikit gapapa\) 🚀\n"
             "• Posisi aktif maksimal: 3 \(biar dompet ga nangis\)\n\n"
             "Gaskeun, siapa takut! Kalo profit traktir seblak ya! 🌶️"
+            "\n\n_*Disclaimer: bot cuma kasih sinyal tongkrongan, rugi tanggung sendiri ya bro!*_"
         )
     
     def get_entry_message(self, action: str, symbol: str, confidence: float, reason: str, pro_analysis: Dict, genius_features: Dict = None) -> str:
@@ -158,6 +159,7 @@ class TelegramNotifier:
         msg += f"💬 Alasan: _{simple_reason}_\n"
 
         msg += "\nGaskeun, tapi inget traktir es teh kalo profit! 🍵"
+        msg += "\n\n_Disclaimer: bot cuma temen nongkrong, loss? Jangan salahin gue ya!_"
 
         # Tambah quote random biar rame
         msg += f"\n{random.choice(self.entry_quotes)}"
@@ -183,6 +185,7 @@ class TelegramNotifier:
         msg += f"Alasan: _{simple_reason}_\n"
 
         msg += "\nUdah, yuk jajan dulu buat rayain / pelipur lara! 🍟"
+        msg += "\n\n_Disclaimer: kemenangan/kekalahan tanggung masing-masing, bot cuma narasi doang!_"
 
         # Tambah reaksi tongkrongan random
         msg += f"\n{random.choice(self.exit_reactions)}"
