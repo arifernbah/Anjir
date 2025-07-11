@@ -18,6 +18,9 @@ class KellyCriterionCalculator:
         self.default_win_rate = 0.6
         self.default_avg_win = 0.015
         self.default_avg_loss = 0.01
+        # Track equity curve for dynamic Kelly fraction
+        self.equity_high = 1.0  # Normalized starting equity
+        self.max_drawdown = 0.0  # As fraction
         
     def calculate_kelly_percentage(self, win_rate: float, avg_win: float, avg_loss: float) -> float:
         """
@@ -78,6 +81,33 @@ class KellyCriterionCalculator:
             avg_loss = np.mean(losses) if losses else self.default_avg_loss
             
             kelly_pct = self.calculate_kelly_percentage(win_rate, avg_win, avg_loss)
+
+            # ===== Dynamic Kelly adjustment =====
+            # Re-simulate equity curve to find current balance & drawdown
+            balance = 1.0
+            peak = 1.0
+            max_dd = 0.0
+            for t in trades:
+                balance *= (1 + t.get('profit_pct', 0))
+                if balance > peak:
+                    peak = balance
+                dd = (peak - balance) / peak
+                if dd > max_dd:
+                    max_dd = dd
+
+            self.max_drawdown = max_dd
+
+            # Update equity_high if new high reached
+            if balance > self.equity_high:
+                self.equity_high = balance
+                kelly_pct += 0.05  # Reward equity highs
+
+            # Penalize if drawdown exceeds 8 %
+            if self.max_drawdown > 0.08:
+                kelly_pct -= 0.05
+
+            # Clamp between 0.3 and 0.6 after adjustment (fractional Kelly already applied)
+            kelly_pct = max(0.3, min(kelly_pct, 0.6))
             
             return {
                 "win_rate": win_rate,
@@ -86,7 +116,9 @@ class KellyCriterionCalculator:
                 "kelly_percentage": kelly_pct,
                 "total_trades": len(trades),
                 "winning_trades": len(wins),
-                "losing_trades": len(losses)
+                "losing_trades": len(losses),
+                "equity_high": self.equity_high,
+                "max_drawdown": self.max_drawdown
             }
             
         except Exception as e:
