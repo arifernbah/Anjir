@@ -16,6 +16,7 @@ import psutil
 import os
 import subprocess
 import numpy as np
+import math
 
 # Binance imports
 from binance import AsyncClient, BinanceSocketManager
@@ -586,8 +587,31 @@ class BinanceFuturesProBot:
                 await self.telegram.send_casual_message(f"⚠️ Quantity too small: {quantity:.6f} < {min_qty}")
                 return False
             
-            # Round quantity properly
+            # Round quantity to nearest step
             quantity = round(quantity / step_size) * step_size
+
+            # Ensure minimum notional value (Binance requires >= 5 USDT)
+            notional_value = quantity * current_price
+
+            if notional_value < 5:
+                # Calculate quantity needed for 5 USDT notional and round up to step size
+                min_notional_qty = math.ceil((5 / current_price) / step_size) * step_size
+                # Use the larger of the min-notional quantity or minQty filter
+                quantity = max(min_notional_qty, min_qty)
+                # Re-compute notional after adjustment
+                notional_value = quantity * current_price
+
+                # Skip trade if still below minimum notional (edge-case safety)
+                if notional_value < 5:
+                    logger.info(f"Order notional ${notional_value:.2f} for {symbol} below 5 USDT after adjustment – skipping trade")
+                    await self.telegram.send_casual_message(
+                        f"⚠️ Order for *{symbol}* terlalu kecil (\${notional_value:.2f} < \$5). Trade di-skip.")
+                    return False
+
+            # Final safety: quantity must still be >= minQty
+            if quantity < min_qty:
+                logger.info(f"Final quantity {quantity} < minQty {min_qty} for {symbol} – skipping trade")
+                return False
             
             # Set leverage
             await self.client.futures_change_leverage(symbol=symbol, leverage=leverage)
