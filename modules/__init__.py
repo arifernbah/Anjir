@@ -16,6 +16,7 @@ from .session_timing import TradingSessionAnalyzer
 from .smart_trading import SmartEntry, SmartExit
 from .telegram_handler import TelegramNotifier
 from .performance_monitor import PerformanceMonitor
+from .sentiment import get_market_sentiment, score_text_sentiment
 
 __all__ = [
     'SmartConfig',
@@ -29,4 +30,6 @@ __all__ = [
     'SmartExit',
     'TelegramNotifier',
     'PerformanceMonitor'
+    ,'get_market_sentiment'
+    ,'score_text_sentiment'
 ]
