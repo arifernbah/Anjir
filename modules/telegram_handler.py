@@ -87,25 +87,19 @@ class TelegramNotifier:
     
     def get_startup_message(self) -> str:
         """Startup message yang lucu dan ringan"""
-        return f"""🤖 **ArifBot - OPTIMIZED MODE** 
-
-Wahai para trader! Bot udah siap nih dengan OPTIMIZED MODE - growth lebih cepat dengan risk terkendali! 🚀
-
-📊 **Yang udah jalan:**
-• Pattern detection (kayak detektif)
-• Risk management (jaga-jaga)
-• Volume analysis (ngitung-ngitung)
-• Multi-timeframe (pinter-pinter)
-• Auto leverage (pinter-pinter)
-
-⚙️ **Status:**
-• Memory: ✅ Masih inget
-• Risk: ✅ Masih waras
-• Analysis: ✅ Masih mikir
-• Mode: ✅ Optimized (30-45% target)
-• Positions: ✅ 3 max (65%+ confidence)
-
-Gas trading bro! Growth lebih cepat dengan risk aman! 📈"""
+        # Custom startup message requested by user
+        return (
+            "🤖 ArifBot hadir cuy! \\(mode Optimized dah nyala\\)\n\n"
+            "🍻 Yo, geng! Bot udah bangun dari tidur siang, siap cari cuan sambil ngopi! ☕️\n"
+            "🎮 Fitur andalan lagi on semua: pattern detector, risk guard, auto-leverage… pokoknya kayak squad lengkap pas main futsal.\n\n"
+            "⚙️ Status tongkrongan:\n"
+            "• Otak bot: Masih waras ✅\n"
+            "• Memori: Ga full, santuy ✅\n"
+            "• Target: 30-45% per bulan \\(ngayal dikit gapapa\\) 🚀\n"
+            "• Posisi aktif maksimal: 3 \\(biar dompet ga nangis\\)\n\n"
+            "Gaskeun, siapa takut! Kalo profit traktir seblak ya! 🌶️\n\n"
+            "*Disclaimer: bot cuma kasih sinyal tongkrongan, rugi tanggung sendiri ya bro!*"
+        )
     
     def get_entry_message(self, action: str, symbol: str, confidence: float, reason: str, pro_analysis: Dict, genius_features: Dict = None) -> str:
         """Enhanced entry message dengan genius analysis details"""
