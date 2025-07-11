@@ -252,10 +252,19 @@ class BinanceFuturesProBot:
     async def start_telegram_polling(self):
         """Start Telegram polling as separate task"""
         try:
-            if self.telegram_app:
-                logger.info("Starting Telegram polling...")
-                await self.telegram_app.run_polling(close_loop=False, stop_signals=None)
-                logger.info("Telegram polling started successfully")
+            if not self.telegram_app:
+                logger.warning("Telegram application not initialized")
+                return
+
+            logger.info("Starting Telegram polling (async)...")
+
+            # PTB v22: for async contexts, run sequence: initialize (done), start(), start_polling(), idle()
+            await self.telegram_app.start()
+            await self.telegram_app.updater.start_polling()
+            # Wait until Application is closed (e.g., on stop signal)
+            await self.telegram_app.updater.idle()
+
+            logger.info("Telegram polling stopped (idle exited)")
         except Exception as e:
             logger.error(f"Error starting Telegram polling: {e}")
 
