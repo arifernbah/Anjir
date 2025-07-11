@@ -33,7 +33,7 @@ class SmartEntry:
         self.trades_history = []
         
         # GENIUS FEATURES - Pattern recognition database
-        self.pattern_memory = {}
+        self.pattern_stats = {}  # {'pattern_name': {'trades':int,'wins':int}}
         self.confluence_threshold = 70  # Minimum confluence untuk entry
     
     def analyze_entry(self, klines_data) -> Dict[str, Any]:
@@ -933,6 +933,29 @@ class SmartEntry:
         self.trades_history.append(trade_data)
         if len(self.trades_history) > 100:  # Increased history for better Kelly calculation
             self.trades_history = self.trades_history[-100:]
+
+        # Update pattern stats for self-learning bonus
+        pattern = trade_data.get('primary_pattern')
+        if pattern:
+            stats = self.pattern_stats.get(pattern, {'trades':0,'wins':0})
+            stats['trades'] += 1
+            if trade_data.get('profit_pct',0) > 0:
+                stats['wins'] += 1
+            self.pattern_stats[pattern] = stats
+
+    def _get_pattern_confidence_bonus(self, pattern: str) -> int:
+        """Return +5 or -5 confidence score based on pattern win-rate stats."""
+        if not pattern or pattern == 'neutral' or pattern == 'none':
+            return 0
+        stats = self.pattern_stats.get(pattern)
+        if not stats or stats['trades'] < 30:
+            return 0
+        win_rate = stats['wins'] / stats['trades']
+        if win_rate >= 0.65:
+            return 5
+        elif win_rate <= 0.5:
+            return -5
+        return 0
 
 class SmartExit:
     """SUPER BRILLIANT PRO TRADER Exit - Genius Level Risk Management"""

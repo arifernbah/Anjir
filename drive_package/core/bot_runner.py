@@ -725,6 +725,8 @@ class BinanceFuturesProBot:
                     'entry_price': entry_price,
                     'exit_price': current_price,
                     'exit_reason': exit_reason,
+                    'primary_pattern': self.active_entries[symbol].get('entry_analysis', {}).get('entry_analysis', {}).get('genius_features', {}).get('pattern_recognition', {}).get('primary_pattern', 'none')
+                    if exit_analysis else 'none',
                     'timestamp': datetime.now()
                 }
                 self.smart_entry.add_trade_to_history(trade_data)
