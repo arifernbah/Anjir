@@ -30,6 +30,24 @@ class TelegramNotifier:
         self.genius_entry_emojis = ["🧠", "⚡", "🎯", "🚀", "💎", "🔥", "⭐", "🌟"]
         self.genius_exit_emojis = ["💰", "🎉", "✨", "🏆", "💎", "🌟", "⭐", "🔥"]
         self.pattern_emojis = {"hammer": "🔨", "doji": "⚖️", "engulfing": "🌊", "shooting_star": "⭐"}
+
+        # Tongkrongan style extra phrases
+        self.entry_quotes = [
+            "Gaskeun jadi sultan! 👑",
+            "Cuan tipis? Tetep traktir bakso lah! 🍜",
+            "Kalo rugi, santuy... masih ada THR! 🧧",
+            "Udah kaya abang2 indomaret antri top up! 🤣",
+            "Profit = kopi + rokok, setuju? ☕️🚬",
+            "Let's go to the moon sambil makan cilok! 🌕"
+        ]
+        self.exit_reactions = [
+            "Aduh mantul! Lanjut grind! 💃",
+            "Dompet ketawa nih! 😂",
+            "Santai, masih bisa purchase skin ML 👾",
+            "Yah zonk, tapi at least belajar ya bro 😂",
+            "Udud dulu biar chill 🤙",
+            "Tarik sis... semongko! 🍉"
+        ]
         
     async def send_casual_message(self, message: str, parse_mode: str = 'Markdown'):
         """Send casual message dengan intelligent throttling"""
@@ -141,6 +159,9 @@ class TelegramNotifier:
 
         msg += "\nGaskeun, tapi inget traktir es teh kalo profit! 🍵"
 
+        # Tambah quote random biar rame
+        msg += f"\n{random.choice(self.entry_quotes)}"
+
         return msg
     
     def get_exit_message(self, symbol: str, side: str, profit_pct: float, reason: str, urgency: str, exit_analysis: Dict = None) -> str:
@@ -162,6 +183,9 @@ class TelegramNotifier:
         msg += f"Alasan: _{simple_reason}_\n"
 
         msg += "\nUdah, yuk jajan dulu buat rayain / pelipur lara! 🍟"
+
+        # Tambah reaksi tongkrongan random
+        msg += f"\n{random.choice(self.exit_reactions)}"
 
         return msg
     
