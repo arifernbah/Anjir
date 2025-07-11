@@ -906,7 +906,15 @@ class BinanceFuturesProBot:
                     # Check entry conditions with smart position management
                     current_positions_count = len(open_positions)
                     symbol_positions_count = len(symbol_positions)
-                    
+
+                    # ===== Time-of-day filter (Phase B) =====
+                    session_info = self.smart_entry.session_analyzer.get_session_adjustment_factor()
+                    if session_info.get("session") == "asian" and session_info.get("session_adjustment", 1.0) < 1.0:
+                        # Allow only high-confidence setups (>=80) during Asian session
+                        asian_conf_threshold = max(self.config.high_confidence_threshold, 80)
+                    else:
+                        asian_conf_threshold = self.config.confidence_threshold
+
                     # Check if we can add more positions
                     can_add_position = current_positions_count < self.config.max_open_positions
                     
@@ -914,8 +922,8 @@ class BinanceFuturesProBot:
                         entry_analysis = self.smart_entry.analyze_entry(klines_data)
                         
                         # Determine entry type based on confidence and existing positions
-                        is_high_confidence = entry_analysis['confidence'] >= getattr(self.config, 'high_confidence_threshold', 80)
-                        is_normal_confidence = entry_analysis['confidence'] >= self.config.confidence_threshold
+                        is_high_confidence = entry_analysis['confidence'] >= max(getattr(self.config, 'high_confidence_threshold', 80), asian_conf_threshold)
+                        is_normal_confidence = entry_analysis['confidence'] >= asian_conf_threshold
                         
                         # Check if this is a valid entry
                         can_entry = False
