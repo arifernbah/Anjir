@@ -45,7 +45,7 @@
         "timeframe": "15m",
         "strategy": "hybrid",
         "risk_level": "ultra_conservative",
-        "max_open_trades": 2,
+        "max_open_trades": 1,
         "confidence_threshold": 70,
         "high_confidence_threshold": 80,
         "max_high_confidence_positions": 1,
