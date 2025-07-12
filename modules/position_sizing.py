@@ -9,6 +9,21 @@ from typing import Dict, List
 import logging
 from modules.constants import get_fee_rate
 
+# Lightweight helper for small-equity accounts
+def dynamic_fraction(balance: float) -> float:
+    """Return risk fraction based on current balance.
+
+    • < 25 USDT   → 5 % risk per trade
+    • 25-50 USDT  → 7.5 %
+    • ≥ 50 USDT   → 10 %
+    This keeps position size proportional while akun tumbuh.
+    """
+    if balance < 25:
+        return 0.05
+    elif balance < 50:
+        return 0.075
+    return 0.10
+
 logger = logging.getLogger(__name__)
 
 class KellyCriterionCalculator:

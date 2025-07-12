@@ -549,7 +549,9 @@ class BinanceFuturesProBot:
             balance = next((float(x['balance']) for x in balances if x['asset'] == 'USDT'), 0)
             
             # Use professional position sizing with auto leverage
-            risk_pct = position_sizing.get('risk_percentage', 0.02)
+            # Use provided risk_percentage or fallback to dynamic fraction based on balance
+            from modules.position_sizing import dynamic_fraction
+            risk_pct = position_sizing.get('risk_percentage', dynamic_fraction(balance))
             
             # Calculate auto leverage based on market conditions
             market_data = {
