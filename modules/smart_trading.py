@@ -13,6 +13,8 @@ from .market_analysis import MarketRegimeDetector, LiquidityZoneDetector, Market
 from .position_sizing import KellyCriterionCalculator
 from .session_timing import TradingSessionAnalyzer
 from .indicators import SmartIndicators
+# Sentiment module
+from modules.sentiment import get_market_sentiment
 
 logger = logging.getLogger(__name__)
 
@@ -36,11 +38,26 @@ class SmartEntry:
         self.pattern_memory = {}
         self.confluence_threshold = 70  # Minimum confluence untuk entry
     
-    def analyze_entry(self, klines_data) -> Dict[str, Any]:
+    async def analyze_entry(self, klines_data) -> Dict[str, Any]:
         """SUPER BRILLIANT Entry Analysis - Genius Level Intelligence"""
         try:
             if len(klines_data) < 100:  # Butuh data lebih banyak untuk genius analysis
                 return {"action": "wait", "confidence": 0, "reason": "Data insufficient untuk genius analysis"}
+            
+            # === SENTIMENT GUARD & BOOST ===
+            sent_score, sent_mood = await get_market_sentiment()
+            # Skip trading saat Fear-Greed Index ekstrem
+            if sent_score < 15 or sent_score > 85:
+                return {
+                    "action": "wait",
+                    "confidence": 0,
+                    "reason": f"Extreme sentiment {sent_score} ({sent_mood})"
+                }
+
+            sentiment_multiplier = 1.05 if (
+                (sent_mood == "greed" and True) or   # long bias greed (placeholder)
+                (sent_mood == "fear" and True)        # short bias fear  (placeholder)
+            ) else 1.0
             
             # Extract comprehensive price data
             highs = [float(k[2]) for k in klines_data]
@@ -125,7 +142,7 @@ class SmartEntry:
             # Apply session timing with GENIUS enhancement
             session_data = self.session_analyzer.get_session_adjustment_factor()
             session_enhanced = self._enhance_session_analysis(session_data, closes, volumes)
-            final_score = score * session_enhanced['enhanced_multiplier']
+            final_score = score * session_enhanced['enhanced_multiplier'] * sentiment_multiplier
             final_score = min(final_score, 100)
             
             # GENIUS DIRECTION DETERMINATION with confluence
