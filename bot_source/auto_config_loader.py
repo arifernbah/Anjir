@@ -38,6 +38,11 @@ def get_futures_balance(api_key, api_secret):
 
 def load_config_auto(api_key, api_secret, config_file="config_hybrid_all.json"):
     """Load configuration based on account balance"""
+    import os
+    # Resolve config file path relative to this script location
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    config_path = os.path.join(script_dir, config_file)
+
     if not api_key or not api_secret:
         print("[ERROR] API key atau secret tidak tersedia")
         return None
@@ -47,13 +52,13 @@ def load_config_auto(api_key, api_secret, config_file="config_hybrid_all.json"):
     if balance == 0:
         print("[WARN] Tidak bisa mendapatkan balance. Menggunakan config default.")
         # Return config untuk balance minimal
-        with open(config_file, "r") as f:
+        with open(config_path, "r") as f:
             all_configs = json.load(f)
         return all_configs["$3"]  # Config untuk $3 balance
     
     print(f"[INFO] Detected Futures Balance: ${balance:.2f}")
 
-    with open(config_file, "r") as f:
+    with open(config_path, "r") as f:
         all_configs = json.load(f)
 
     keys = sorted([int(k.strip('$')) for k in all_configs])
