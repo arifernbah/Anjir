@@ -126,20 +126,20 @@
     "$10": {
         "initial_balance": 10,
         "exchange": "binance_futures",
-        "leverage": 5,
+        "leverage": 10,
         "symbols": ["DOGEUSDT", "BTCUSDT", "ETHUSDT", "BNBUSDT", "ADAUSDT", "SOLUSDT", "MATICUSDT", "AVAXUSDT", "DOTUSDT", "LINKUSDT"],
         "timeframe": "15m",
         "strategy": "hybrid",
         "risk_level": "very_conservative",
-        "max_open_trades": 2,
+        "max_open_trades": 1,
         "confidence_threshold": 70,
         "high_confidence_threshold": 80,
         "max_high_confidence_positions": 1,
         "different_symbols_only": true,
         "portfolio_heat_limit": 10,
         "position_sizing": {
-            "method": "kelly_partial",
-            "fraction": 0.6
+            "method": "fixed_fraction",
+            "fraction": 0.05
         },
         "safety_orders": {
             "enabled": false,
@@ -149,11 +149,11 @@
         },
         "take_profit": {
             "enabled": true,
-            "tp_percent": 1.0
+            "tp_percent": 1.5
         },
         "stop_loss": {
             "enabled": true,
-            "sl_percent": 4.0
+            "sl_percent": 0.75
         },
         "trailing": {
             "enabled": true,
@@ -169,20 +169,20 @@
     "$15": {
         "initial_balance": 15,
         "exchange": "binance_futures",
-        "leverage": 5,
+        "leverage": 10,
         "symbols": ["DOGEUSDT", "BTCUSDT", "ETHUSDT", "BNBUSDT", "ADAUSDT", "SOLUSDT", "MATICUSDT", "AVAXUSDT", "DOTUSDT", "LINKUSDT"],
         "timeframe": "15m",
         "strategy": "hybrid",
         "risk_level": "very_conservative",
-        "max_open_trades": 2,
+        "max_open_trades": 1,
         "confidence_threshold": 70,
         "high_confidence_threshold": 80,
         "max_high_confidence_positions": 1,
         "different_symbols_only": true,
         "portfolio_heat_limit": 10,
         "position_sizing": {
-            "method": "kelly_partial",
-            "fraction": 0.7
+            "method": "fixed_fraction",
+            "fraction": 0.05
         },
         "safety_orders": {
             "enabled": false,
@@ -192,11 +192,11 @@
         },
         "take_profit": {
             "enabled": true,
-            "tp_percent": 1.0
+            "tp_percent": 1.5
         },
         "stop_loss": {
             "enabled": true,
-            "sl_percent": 4.0
+            "sl_percent": 0.75
         },
         "trailing": {
             "enabled": true,
@@ -217,15 +217,15 @@
         "timeframe": "15m",
         "strategy": "hybrid",
         "risk_level": "moderate",
-        "max_open_trades": 3,
+        "max_open_trades": 1,
         "confidence_threshold": 65,
         "high_confidence_threshold": 75,
         "max_high_confidence_positions": 2,
         "different_symbols_only": true,
         "portfolio_heat_limit": 12,
         "position_sizing": {
-            "method": "kelly_partial",
-            "fraction": 0.8
+            "method": "fixed_fraction",
+            "fraction": 0.05
         },
         "safety_orders": {
             "enabled": false,
@@ -235,11 +235,11 @@
         },
         "take_profit": {
             "enabled": true,
-            "tp_percent": 1.2
+            "tp_percent": 1.5
         },
         "stop_loss": {
             "enabled": true,
-            "sl_percent": 5.0
+            "sl_percent": 0.75
         },
         "trailing": {
             "enabled": true,
