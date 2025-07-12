@@ -52,7 +52,7 @@
         "different_symbols_only": true,
         "portfolio_heat_limit": 10,
         "position_sizing": {
-            "method": "kelly_partial",
+            "method": "fixed_fraction",
             "fraction": 0.4
         },
         "safety_orders": {
